@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="CjClutter.ObjLoader.Loader">
-      <HintPath>..\..\..\..\ObjLoader-master\source\CjClutter.ObjLoader.Loader\bin\Debug\netstandard1.4\CjClutter.ObjLoader.Loader.dll</HintPath>
+      <HintPath>..\lib\CjClutter.ObjLoader.Loader\bin\Debug\netstandard1.4\CjClutter.ObjLoader.Loader.dll</HintPath>
     </Reference>
   </ItemGroup>
 
