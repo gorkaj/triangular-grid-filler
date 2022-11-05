@@ -37,9 +37,11 @@ namespace triangular_grid_filler
             this.vertices.Add(a);
             this.vertices.Add(b);
             this.vertices.Add(c);
+            foreach (Vertex v in vertices)
+                mappedPoints.Add(Triangulator.MapCoordinatesToCanvas(v.X, v.Y, Main.CANVAS_SIZE / 2));
         }
 
-        public List<Vertex> Vertices { get => vertices; set => vertices = value; }
+        public List<Point> Points { get => mappedPoints; set => mappedPoints = value; }
 
         public void drawTriangle(Graphics g)
         {

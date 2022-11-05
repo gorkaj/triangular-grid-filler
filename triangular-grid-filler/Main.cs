@@ -7,11 +7,14 @@ namespace triangular_grid_filler
         private ObjLoaderFactory objLoaderFactory;
         private LoadResult loadedObject;
         private Bitmap drawArea;
+        //private Int32[] canvasBits;
         private List<Triangle> triangles;
 
         private float kd;
         private float ks;
         private int m;
+
+        private (int R, int G, int B) objectColor;
 
         public static int CANVAS_SIZE = 650;
         private const string DEFAULT_OBJ_PATH = "../../../models/sphere.obj";
@@ -23,10 +26,22 @@ namespace triangular_grid_filler
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
             loadedObject = LoadObjFile();
             triangles = Triangulator.Triangulate(loadedObject.Vertices.ToList(), loadedObject.Groups[0].Faces.ToList());
-            kd = kd_trackbar.Value;
-            ks = ks_trackbar.Value;
+            kd = kd_trackbar.Value / 100;
+            ks = ks_trackbar.Value / 100;
             m = m_trackbar.Value;
-            Draw();
+            objectColor = (255, 235, 205);
+            FillColorBox(objColorBox);
+            //canvasBits = new Int32[CANVAS_SIZE * CANVAS_SIZE];
+            RedrawAll();
+        }
+
+        private void FillColorBox(PictureBox box)
+        {
+            box.Image?.Dispose();
+            Bitmap bitmap = new Bitmap(46, 34);
+            Graphics graphics = Graphics.FromImage(bitmap);
+            graphics.Clear(Color.FromArgb(objectColor.R, objectColor.G, objectColor.B));
+            box.Image = bitmap;
         }
 
         private LoadResult LoadObjFile(string path = DEFAULT_OBJ_PATH)
@@ -36,33 +51,15 @@ namespace triangular_grid_filler
             return objLoader.Load(fileStream);
         }
 
-        private void Draw()
+        private void RedrawAll()
         {
             drawArea.Dispose();
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
 
-            //int i = 0;
-            //foreach (var vert in loadedObject.Vertices)
-            //{
-            //    using (Graphics g = Graphics.FromImage(drawArea))
-            //    {
-            //        var p = Triangulator.MapCoordinatesToCanvas(vert.X, vert.Y, CANVAS_SIZE / 2);
-            //        //g.FillEllipse(new SolidBrush(Color.Red), p.X, p.Y, 5, 5);
-            //        Font f = new("Loboto", 9);
-            //        StringFormat sf = new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            //        g.DrawString(i.ToString(), f, new SolidBrush(Color.Black), p.X, p.Y, sf);
-            //    }
-            //    ++i;
-            //}
-
-            //var group = loadedObject.Groups[0];
-            //foreach(var face in group.Faces)
-            //{
-            //    using (Graphics g = Graphics.FromImage(drawArea))
-            //    {
-            //        g.FillEllipse(new SolidBrush(Color.Red), face[0].VertexIndex, 20, 10, 10);
-            //    }
-            //}
+            foreach (var t in triangles)
+            {
+                TriangleFiller.FillTriangle(t.Points, Color.FromArgb(objectColor.R, objectColor.G, objectColor.B), drawArea);
+            }
 
             foreach (var t in triangles)
             {
@@ -74,6 +71,17 @@ namespace triangular_grid_filler
 
             Canvas.Image = drawArea;
             Canvas.Refresh();
+        }
+
+        private void objColorBox_Click(object sender, EventArgs e)
+        {
+            ColorDialog dialog = new ColorDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                objectColor = (dialog.Color.R, dialog.Color.G, dialog.Color.B);
+            }
+            FillColorBox(objColorBox);
+            RedrawAll();
         }
     }
 }

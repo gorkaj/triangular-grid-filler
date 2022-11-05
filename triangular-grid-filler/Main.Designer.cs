@@ -31,6 +31,8 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Canvas = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.objColorBox = new System.Windows.Forms.PictureBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -40,6 +42,7 @@
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.objColorBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_trackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).BeginInit();
@@ -72,24 +75,45 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.objColorBox);
+            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.m_trackbar);
             this.groupBox1.Controls.Add(this.ks_trackbar);
             this.groupBox1.Controls.Add(this.kd_trackbar);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(760, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(319, 197);
+            this.groupBox1.Size = new System.Drawing.Size(319, 697);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Parameters";
             // 
+            // objColorBox
+            // 
+            this.objColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.objColorBox.Location = new System.Drawing.Point(169, 210);
+            this.objColorBox.Name = "objColorBox";
+            this.objColorBox.Size = new System.Drawing.Size(46, 34);
+            this.objColorBox.TabIndex = 7;
+            this.objColorBox.TabStop = false;
+            this.objColorBox.Click += new System.EventHandler(this.objColorBox_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(71, 217);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(91, 20);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Object color";
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(30, 135);
+            this.label3.Location = new System.Drawing.Point(31, 144);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(65, 20);
             this.label3.TabIndex = 5;
@@ -98,7 +122,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(24, 85);
+            this.label2.Location = new System.Drawing.Point(23, 96);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(71, 20);
             this.label2.TabIndex = 4;
@@ -107,7 +131,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(24, 37);
+            this.label1.Location = new System.Drawing.Point(21, 49);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(74, 20);
             this.label1.TabIndex = 3;
@@ -157,6 +181,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.objColorBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_trackbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).EndInit();
@@ -175,5 +200,7 @@
         private Label label3;
         private Label label2;
         private Label label1;
+        private Label label4;
+        private PictureBox objColorBox;
     }
 }
