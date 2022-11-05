@@ -14,7 +14,7 @@ namespace triangular_grid_filler
         private int m;
 
         public static int CANVAS_SIZE = 650;
-        private const string DEFAULT_OBJ_PATH = "../../../objects/sphere.obj";
+        private const string DEFAULT_OBJ_PATH = "../../../models/sphere.obj";
 
         public Main()
         {
