@@ -39,6 +39,8 @@
             this.m_trackbar = new System.Windows.Forms.TrackBar();
             this.ks_trackbar = new System.Windows.Forms.TrackBar();
             this.kd_trackbar = new System.Windows.Forms.TrackBar();
+            this.lightColorBox = new System.Windows.Forms.PictureBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -46,6 +48,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.m_trackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -75,6 +78,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lightColorBox);
+            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.objColorBox);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
@@ -167,6 +172,25 @@
             this.kd_trackbar.SmallChange = 5;
             this.kd_trackbar.TabIndex = 0;
             // 
+            // lightColorBox
+            // 
+            this.lightColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lightColorBox.Location = new System.Drawing.Point(169, 250);
+            this.lightColorBox.Name = "lightColorBox";
+            this.lightColorBox.Size = new System.Drawing.Size(46, 34);
+            this.lightColorBox.TabIndex = 9;
+            this.lightColorBox.TabStop = false;
+            this.lightColorBox.Click += new System.EventHandler(this.lightColorBox_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(82, 258);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 20);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Light color";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -185,6 +209,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.m_trackbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -202,5 +227,7 @@
         private Label label1;
         private Label label4;
         private PictureBox objColorBox;
+        private PictureBox lightColorBox;
+        private Label label5;
     }
 }
