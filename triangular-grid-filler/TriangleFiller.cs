@@ -23,8 +23,9 @@ namespace triangular_grid_filler
 
     public static class TriangleFiller
     {
-        public static void FillTriangle(List<Point> points, Color color, Bitmap bmap)
+        public static void FillTriangle(Triangle t, Color color, Bitmap bmap, Func<double, double, Triangle, Color> computeColor)
         {
+            var points = t.Points;
             List<int> sortOrder = Enumerable.Range(0, points.Count).ToList();
 
             sortOrder.Sort((a, b) => points[a].Y == points[b].Y ? points[a].X.CompareTo(points[b].X) : points[a].Y.CompareTo(points[b].Y));
@@ -81,7 +82,7 @@ namespace triangular_grid_filler
                     {
                         try
                         {
-                            bmap.SetPixel(x, y, color);
+                            bmap.SetPixel(x, y, computeColor(x, y, t));
                         }
                         catch (Exception)
                         {

@@ -23,7 +23,8 @@ namespace triangular_grid_filler
             {
                 triangles.Add(new Triangle(vertices[face[0].VertexIndex - 1],
                                             vertices[face[1].VertexIndex - 1],
-                                            vertices[face[2].VertexIndex - 1]));
+                                            vertices[face[2].VertexIndex - 1],
+                                            new List<int>(){ face[0].NormalIndex - 1, face[1].NormalIndex - 1, face[2].NormalIndex - 1 }));
             }
 
             return triangles;

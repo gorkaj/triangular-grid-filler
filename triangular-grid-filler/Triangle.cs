@@ -9,27 +9,28 @@ namespace triangular_grid_filler
 {
     public class Triangle
     {
+        private List<int> ind;
         private List<Vertex> vertices;
         private List<Point> mappedPoints;
         private Pen pen;
 
-        public Triangle()
-        {
-            vertices = new List<Vertex>();
-            mappedPoints = new List<Point>();
-            pen = new Pen(new SolidBrush(Color.Black), 1);
-        }
+        //public Triangle()
+        //{
+        //    vertices = new List<Vertex>();
+        //    mappedPoints = new List<Point>();
+        //    pen = new Pen(new SolidBrush(Color.Black), 1);
+        //}
 
-        public Triangle(List<Vertex> _vertices)
-        {
-            vertices = new List<Vertex>();
-            mappedPoints = new List<Point>();
-            pen = new Pen(new SolidBrush(Color.Black), 1);
-            foreach (Vertex v in _vertices)
-                this.vertices.Add(v);
-        }
+        //public Triangle(List<Vertex> _vertices)
+        //{
+        //    vertices = new List<Vertex>();
+        //    mappedPoints = new List<Point>();
+        //    pen = new Pen(new SolidBrush(Color.Black), 1);
+        //    foreach (Vertex v in _vertices)
+        //        this.vertices.Add(v);
+        //}
 
-        public Triangle(Vertex a, Vertex b, Vertex c)
+        public Triangle(Vertex a, Vertex b, Vertex c, List<int> ind)
         {
             vertices = new List<Vertex>();
             mappedPoints = new List<Point>();
@@ -39,9 +40,11 @@ namespace triangular_grid_filler
             this.vertices.Add(c);
             foreach (Vertex v in vertices)
                 mappedPoints.Add(Triangulator.MapCoordinatesToCanvas(v.X, v.Y, Main.CANVAS_SIZE / 2));
+            this.ind = ind;
         }
 
         public List<Point> Points { get => mappedPoints; set => mappedPoints = value; }
+        public List<int> NormalIds { get => ind; }
 
         public void drawTriangle(Graphics g)
         {

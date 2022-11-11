@@ -31,6 +31,12 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Canvas = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.showGrid = new System.Windows.Forms.CheckBox();
+            this.colorGroupBox = new System.Windows.Forms.GroupBox();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.interpolateButton = new System.Windows.Forms.RadioButton();
+            this.lightColorBox = new System.Windows.Forms.PictureBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.objColorBox = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -39,16 +45,15 @@
             this.m_trackbar = new System.Windows.Forms.TrackBar();
             this.ks_trackbar = new System.Windows.Forms.TrackBar();
             this.kd_trackbar = new System.Windows.Forms.TrackBar();
-            this.lightColorBox = new System.Windows.Forms.PictureBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.colorGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objColorBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_trackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -78,6 +83,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.showGrid);
+            this.groupBox1.Controls.Add(this.colorGroupBox);
             this.groupBox1.Controls.Add(this.lightColorBox);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.objColorBox);
@@ -95,6 +102,72 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Parameters";
+            // 
+            // showGrid
+            // 
+            this.showGrid.AutoSize = true;
+            this.showGrid.Checked = true;
+            this.showGrid.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showGrid.Location = new System.Drawing.Point(6, 405);
+            this.showGrid.Name = "showGrid";
+            this.showGrid.Size = new System.Drawing.Size(98, 24);
+            this.showGrid.TabIndex = 11;
+            this.showGrid.Text = "Show grid";
+            this.showGrid.UseVisualStyleBackColor = true;
+            this.showGrid.CheckedChanged += new System.EventHandler(this.showGrid_CheckedChanged);
+            // 
+            // colorGroupBox
+            // 
+            this.colorGroupBox.Controls.Add(this.radioButton2);
+            this.colorGroupBox.Controls.Add(this.interpolateButton);
+            this.colorGroupBox.Location = new System.Drawing.Point(6, 304);
+            this.colorGroupBox.Name = "colorGroupBox";
+            this.colorGroupBox.Size = new System.Drawing.Size(304, 95);
+            this.colorGroupBox.TabIndex = 10;
+            this.colorGroupBox.TabStop = false;
+            this.colorGroupBox.Text = "Color";
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(25, 56);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(65, 24);
+            this.radioButton2.TabIndex = 1;
+            this.radioButton2.Text = "exact";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // interpolateButton
+            // 
+            this.interpolateButton.AutoSize = true;
+            this.interpolateButton.Checked = true;
+            this.interpolateButton.Location = new System.Drawing.Point(25, 26);
+            this.interpolateButton.Name = "interpolateButton";
+            this.interpolateButton.Size = new System.Drawing.Size(193, 24);
+            this.interpolateButton.TabIndex = 0;
+            this.interpolateButton.TabStop = true;
+            this.interpolateButton.Text = "interpolate from vertices";
+            this.interpolateButton.UseVisualStyleBackColor = true;
+            this.interpolateButton.CheckedChanged += new System.EventHandler(this.interpolateButton_CheckedChanged);
+            // 
+            // lightColorBox
+            // 
+            this.lightColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lightColorBox.Location = new System.Drawing.Point(169, 250);
+            this.lightColorBox.Name = "lightColorBox";
+            this.lightColorBox.Size = new System.Drawing.Size(46, 34);
+            this.lightColorBox.TabIndex = 9;
+            this.lightColorBox.TabStop = false;
+            this.lightColorBox.Click += new System.EventHandler(this.lightColorBox_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(82, 258);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 20);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Light color";
             // 
             // objColorBox
             // 
@@ -150,7 +223,8 @@
             this.m_trackbar.Name = "m_trackbar";
             this.m_trackbar.Size = new System.Drawing.Size(186, 56);
             this.m_trackbar.TabIndex = 2;
-            this.m_trackbar.Value = 1;
+            this.m_trackbar.Value = 40;
+            this.m_trackbar.Scroll += new System.EventHandler(this.m_trackbar_Scroll);
             // 
             // ks_trackbar
             // 
@@ -161,6 +235,8 @@
             this.ks_trackbar.Size = new System.Drawing.Size(186, 56);
             this.ks_trackbar.SmallChange = 5;
             this.ks_trackbar.TabIndex = 1;
+            this.ks_trackbar.Value = 20;
+            this.ks_trackbar.ValueChanged += new System.EventHandler(this.ks_trackbar_ValueChanged);
             // 
             // kd_trackbar
             // 
@@ -171,25 +247,8 @@
             this.kd_trackbar.Size = new System.Drawing.Size(186, 56);
             this.kd_trackbar.SmallChange = 5;
             this.kd_trackbar.TabIndex = 0;
-            // 
-            // lightColorBox
-            // 
-            this.lightColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lightColorBox.Location = new System.Drawing.Point(169, 250);
-            this.lightColorBox.Name = "lightColorBox";
-            this.lightColorBox.Size = new System.Drawing.Size(46, 34);
-            this.lightColorBox.TabIndex = 9;
-            this.lightColorBox.TabStop = false;
-            this.lightColorBox.Click += new System.EventHandler(this.lightColorBox_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(82, 258);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 20);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Light color";
+            this.kd_trackbar.Value = 80;
+            this.kd_trackbar.ValueChanged += new System.EventHandler(this.kd_trackbar_ValueChanged);
             // 
             // Main
             // 
@@ -205,11 +264,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.colorGroupBox.ResumeLayout(false);
+            this.colorGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objColorBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_trackbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -229,5 +290,9 @@
         private PictureBox objColorBox;
         private PictureBox lightColorBox;
         private Label label5;
+        private GroupBox colorGroupBox;
+        private RadioButton radioButton2;
+        private RadioButton interpolateButton;
+        private CheckBox showGrid;
     }
 }
