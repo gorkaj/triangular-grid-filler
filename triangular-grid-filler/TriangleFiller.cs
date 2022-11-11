@@ -79,7 +79,13 @@ namespace triangular_grid_filler
                     int max = (int)Math.Round(AET[i + 1].x, 0);
                     for (x = Math.Max(x, 0); x <= max; x++)
                     {
-                        bmap.SetPixel(x, y, color);
+                        try
+                        {
+                            bmap.SetPixel(x, y, color);
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
                 }
 

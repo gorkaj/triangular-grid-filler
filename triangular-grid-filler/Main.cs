@@ -21,7 +21,7 @@ namespace triangular_grid_filler
         private (int R, int G, int B) lightColor;
 
         public static int CANVAS_SIZE = 650;
-        private const string DEFAULT_OBJ_PATH = "../../../models/sphere.obj";
+        private const string DEFAULT_OBJ_PATH = "../../../models/sphere-lab.obj";
 
         public Main()
         {
