@@ -23,7 +23,7 @@ namespace triangular_grid_filler
 
     public static class TriangleFiller
     {
-        public static void FillTriangle(Triangle t, Color color, Bitmap bmap, Func<double, double, Triangle, Color> computeColor)
+        public static void FillTriangle(Triangle t, Bitmap bmap, Func<double, double, Triangle, Color> computeColor)
         {
             var points = t.Points;
             List<int> sortOrder = Enumerable.Range(0, points.Count).ToList();
