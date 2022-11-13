@@ -44,12 +44,12 @@ namespace triangular_grid_filler
             FillColorBox(objColorBox, objectColor);
             lightColor = (255, 255, 255);
             FillColorBox(lightColorBox, lightColor);
-            lightVersor = new Vector3((float)-0.5, 1, (float).8);
+            lightVersor = new Vector3(1, 0, .9F);
             lightVersor = Vector3.Normalize(lightVersor);
             //canvasBits = new Int32[CANVAS_SIZE * CANVAS_SIZE];
             tickCounter = 0;
             timer = new Timer();
-            timer.Interval = 5;
+            timer.Interval = 20;
             timer.Tick += new EventHandler(UpdateLightVector);
             timer.Start();
             RedrawAll();
@@ -73,27 +73,30 @@ namespace triangular_grid_filler
 
         private void RedrawAll()
         {
-            drawArea.Dispose();
-            drawArea = new Bitmap(Canvas.Width, Canvas.Height);
+            //drawArea.Dispose();
+            //drawArea = new Bitmap(Canvas.Width, Canvas.Height);
+            // Graphics g = Graphics.FromImage(drawArea);
 
+            //Parallel.ForEach(triangles,
+            //   t => TriangleFiller.FillTriangle(t, Color.FromArgb(objectColor.R, objectColor.G, objectColor.B), drawArea, ComputeColor));
             foreach (var t in triangles)
             {
                 TriangleFiller.FillTriangle(t, Color.FromArgb(objectColor.R, objectColor.G, objectColor.B), drawArea, ComputeColor);
             }
 
-            if(showGrid.Checked)
+            if (showGrid.Checked)
             {
-                foreach (var t in triangles)
+                using (Graphics g = Graphics.FromImage(drawArea))
                 {
-                    using (Graphics g = Graphics.FromImage(drawArea))
+                    foreach (var t in triangles)
                     {
                         t.drawTriangle(g);
-                    }
+                    }  
                 }
             }
 
             Canvas.Image = drawArea;
-            Canvas.Refresh();
+            //Canvas.Refresh();
         }
 
         private float Cos(Vector3 a, Vector3 b)
@@ -148,26 +151,27 @@ namespace triangular_grid_filler
                 var R3 = 2 * Cos(N3, lightVersor) * N3 - lightVersor;
 
                 var R =
-                    w1 * Math.Max(Cos(N1, lightVersor), 0) * kd * lightColor.R / 255 * objectColor.R / 255 + 
+                    w1 * Cos(N1, lightVersor) * kd * lightColor.R / 255 * objectColor.R / 255 + 
                     ks * lightColor.R / 255 * objectColor.R / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m) +
-                    w2 * Math.Max(Cos(N2, lightVersor), 0) * kd * lightColor.R / 255 * objectColor.R / 255 + 
+                    w2 * Cos(N2, lightVersor) * kd * lightColor.R / 255 * objectColor.R / 255 + 
                     ks * lightColor.R / 255 * objectColor.R / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m) +
-                    w3 * Math.Max(Cos(N3, lightVersor), 0) * kd * lightColor.R / 255 * objectColor.R / 255 + 
+                    w3 * Cos(N3, lightVersor) * kd * lightColor.R / 255 * objectColor.R / 255 + 
                     ks * lightColor.R / 255 * objectColor.R / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m);
 
                 var G = 
-                    w1 * Math.Max(Cos(N1, lightVersor), 0) * kd * lightColor.G / 255 * objectColor.G / 255 + 
+                    w1 * Cos(N1, lightVersor) * kd * lightColor.G / 255 * objectColor.G / 255 + 
                     ks * lightColor.G / 255 * objectColor.G / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m) +
-                    w2 * Math.Max(Cos(N2, lightVersor), 0) * kd * lightColor.G / 255 * objectColor.G / 255 +
+                    w2 * Cos(N2, lightVersor) * kd * lightColor.G / 255 * objectColor.G / 255 +
                     ks * lightColor.G / 255 * objectColor.G / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m) +
-                    w3 * Math.Max(Cos(N3, lightVersor), 0) * kd * lightColor.G / 255 * objectColor.G / 255 + 
+                    w3 * Cos(N3, lightVersor) * kd * lightColor.G / 255 * objectColor.G / 255 + 
                     ks * lightColor.G / 255 * objectColor.G / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m);
 
-                var B = w1 * Math.Max(Cos(N1, lightVersor), 0) * kd * lightColor.B / 255 * objectColor.B / 255 + 
+                var B =
+                    w1 * Cos(N1, lightVersor) * kd * lightColor.B / 255 * objectColor.B / 255 + 
                     ks * lightColor.B / 255 * objectColor.B / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m) +
-                    w2 * Math.Max(Cos(N2, lightVersor), 0) * kd * lightColor.B / 255 * objectColor.B / 255 + 
+                    w2 * Cos(N2, lightVersor) * kd * lightColor.B / 255 * objectColor.B / 255 + 
                     ks * lightColor.B / 255 * objectColor.B / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m) +
-                    w3 * Math.Max(Cos(N3, lightVersor), 0) * kd * lightColor.B / 255 * objectColor.B / 255 + 
+                    w3 * Cos(N3, lightVersor) * kd * lightColor.B / 255 * objectColor.B / 255 + 
                     ks * lightColor.B / 255 * objectColor.B / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m);
 
                 R = Math.Min(1, Math.Max(0, R));
@@ -256,7 +260,7 @@ namespace triangular_grid_filler
             float MAX = 240;
             if (tickCounter == MAX) tickCounter = 0;
             float x, y, z;
-            z = 0.1F;
+            z = 0.9F;
             x = (float)Math.Cos(tickCounter / MAX * Math.PI * 2);
             y = (float)Math.Sin(tickCounter / MAX * Math.PI * 2);
 
