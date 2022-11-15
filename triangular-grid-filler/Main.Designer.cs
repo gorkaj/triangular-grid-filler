@@ -264,7 +264,7 @@
             this.m_trackbar.Name = "m_trackbar";
             this.m_trackbar.Size = new System.Drawing.Size(317, 56);
             this.m_trackbar.TabIndex = 2;
-            this.m_trackbar.Value = 40;
+            this.m_trackbar.Value = 20;
             this.m_trackbar.Scroll += new System.EventHandler(this.m_trackbar_Scroll);
             // 
             // ks_trackbar

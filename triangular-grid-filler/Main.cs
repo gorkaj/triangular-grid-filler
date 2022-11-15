@@ -8,10 +8,12 @@ namespace triangular_grid_filler
 {
     public partial class Main : Form
     {
+        public static int CANVAS_SIZE = 650;
         private ObjLoaderFactory objLoaderFactory;
         private LoadResult loadedObject;
-        private Bitmap drawArea;
-        private Bitmap texture;
+        //private Bitmap drawArea;
+        private DirectBitmap drawArea;
+        private DirectBitmap texture;
         private List<Triangle> triangles;
         private List<Normal> normals;
 
@@ -26,15 +28,14 @@ namespace triangular_grid_filler
         readonly Timer timer;
         int tickCounter;
 
-        public static int CANVAS_SIZE = 650;
-        private const string DEFAULT_OBJ_PATH = "../../../models/sphere.obj";
+        private const string DEFAULT_OBJ_PATH = "../../../models/sphereSmooth.obj";
         private const string DEFAULT_TEXTURE_PATH = "../../../textures/waves.jpg";
 
         public Main()
         {
             InitializeComponent();
             objLoaderFactory = new ObjLoaderFactory();
-            drawArea = new Bitmap(Canvas.Width, Canvas.Height);
+            drawArea = new(CANVAS_SIZE, CANVAS_SIZE);
             loadedObject = LoadObjFile();
             triangles = Triangulator.Triangulate(loadedObject.Vertices.ToList(), loadedObject.Groups[0].Faces.ToList());
             normals = loadedObject.Normals.ToList();
@@ -52,7 +53,7 @@ namespace triangular_grid_filler
             tickCounter = 0;
             timer = new Timer
             {
-                Interval = 20
+                Interval = 10
             };
             timer.Tick += new EventHandler(UpdateLightVector);
             timer.Start();
@@ -78,10 +79,10 @@ namespace triangular_grid_filler
         private void RedrawAll()
         {
             drawArea.Dispose();
-            drawArea = new Bitmap(Canvas.Width, Canvas.Height);
+            drawArea = new(CANVAS_SIZE, CANVAS_SIZE);
 
             //Parallel.ForEach(triangles,
-            //   t => TriangleFiller.FillTriangle(t, Color.FromArgb(objectColor.R, objectColor.G, objectColor.B), drawArea, ComputeColor));
+            //   t => TriangleFiller.FillTriangle(t, drawArea, ComputeColor));
 
             foreach (var t in triangles)
             {
@@ -90,7 +91,7 @@ namespace triangular_grid_filler
 
             if (showGrid.Checked)
             {
-                using (Graphics g = Graphics.FromImage(drawArea))
+                using (Graphics g = Graphics.FromImage(drawArea.Bitmap))
                 {
                     foreach (var t in triangles)
                     {
@@ -99,7 +100,7 @@ namespace triangular_grid_filler
                 }
             }
 
-            Canvas.Image = drawArea;
+            Canvas.Image = drawArea.Bitmap;
             //Canvas.Refresh();
         }
 
@@ -121,11 +122,15 @@ namespace triangular_grid_filler
         private void LoadTexture(string path)
         {
             Image sourceImage = new Bitmap(path);
-            texture = new Bitmap(path);
+            texture = new DirectBitmap(CANVAS_SIZE, CANVAS_SIZE);
+            using (var g = Graphics.FromImage(texture.Bitmap))
+            {
+                g.DrawImage(sourceImage, 0, 0);
+            }
 
-            Graphics graphics = Graphics.FromImage(drawArea);
+            Graphics graphics = Graphics.FromImage(drawArea.Bitmap);
             graphics.DrawImage(sourceImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
-            Canvas.Image = drawArea;
+            Canvas.Image = drawArea.Bitmap;
             RedrawAll();
         }
 
@@ -159,9 +164,16 @@ namespace triangular_grid_filler
             var N2 = new Vector3(normals[i2].X, normals[i2].Y, normals[i2].Z);
             var N3 = new Vector3(normals[i3].X, normals[i3].Y, normals[i3].Z);
 
+            N1 = Vector3.Normalize(N1);
+            N2 = Vector3.Normalize(N2);
+            N3 = Vector3.Normalize(N3);
+
+
             double w1 = ((v2.Y - v3.Y) * (x - v3.X) + (v3.X - v2.X) * (y - v3.Y)) / ((v2.Y - v3.Y) * (v1.X - v3.X) + (v3.X - v2.X) * (v1.Y - v3.Y));
             double w2 = ((v3.Y - v1.Y) * (x - v3.X) + (v1.X - v3.X) * (y - v3.Y)) / ((v2.Y - v3.Y) * (v1.X - v3.X) + (v3.X - v2.X) * (v1.Y - v3.Y));
             double w3 = 1 - w1 - w2;
+
+            double R, G, B;
 
             if (interpolateButton.Checked)
             { 
@@ -169,35 +181,29 @@ namespace triangular_grid_filler
                 var R2 = 2 * Cos(N2, lightVersor) * N2 - lightVersor;
                 var R3 = 2 * Cos(N3, lightVersor) * N3 - lightVersor;
 
-                var R =
-                    w1 * Cos(N1, lightVersor) * kd * lightColor.R / 255 * objColor.R / 255 + 
-                    ks * lightColor.R / 255 * objectColor.R / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m) +
-                    w2 * Cos(N2, lightVersor) * kd * lightColor.R / 255 * objColor.R / 255 + 
-                    ks * lightColor.R / 255 * objectColor.R / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m) +
-                    w3 * Cos(N3, lightVersor) * kd * lightColor.R / 255 * objColor.R / 255 + 
-                    ks * lightColor.R / 255 * objectColor.R / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m);
+                R =
+                    w1 * (Cos(N1, lightVersor) * kd * lightColor.R / 255f * objColor.R / 255f +
+                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m)) +
+                    w2 * (Cos(N2, lightVersor) * kd * lightColor.R / 255f * objColor.R / 255f +
+                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m)) +
+                    w3 * (Cos(N3, lightVersor) * kd * lightColor.R / 255f * objColor.R / 255f +
+                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m));
 
-                var G = 
-                    w1 * Cos(N1, lightVersor) * kd * lightColor.G / 255 * objColor.G / 255 + 
-                    ks * lightColor.G / 255 * objectColor.G / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m) +
-                    w2 * Cos(N2, lightVersor) * kd * lightColor.G / 255 * objColor.G / 255 +
-                    ks * lightColor.G / 255 * objectColor.G / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m) +
-                    w3 * Cos(N3, lightVersor) * kd * lightColor.G / 255 * objColor.G / 255 + 
-                    ks * lightColor.G / 255 * objectColor.G / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m);
+                G =
+                    w1 * (Cos(N1, lightVersor) * kd * lightColor.G / 255f * objColor.G / 255f +
+                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m)) +
+                    w2 * (Cos(N2, lightVersor) * kd * lightColor.G / 255f * objColor.G / 255f +
+                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m)) +
+                    w3 * (Cos(N3, lightVersor) * kd * lightColor.G / 255f * objColor.G / 255f +
+                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m));
 
-                var B =
-                    w1 * Cos(N1, lightVersor) * kd * lightColor.B / 255 * objColor.B / 255 + 
-                    ks * lightColor.B / 255 * objectColor.B / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m) +
-                    w2 * Cos(N2, lightVersor) * kd * lightColor.B / 255 * objColor.B / 255 + 
-                    ks * lightColor.B / 255 * objectColor.B / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m) +
-                    w3 * Cos(N3, lightVersor) * kd * lightColor.B / 255 * objColor.B / 255 + 
-                    ks * lightColor.B / 255 * objectColor.B / 255 * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m);
-
-                R = Math.Min(1, Math.Max(0, R));
-                G = Math.Min(1, Math.Max(0, G));
-                B = Math.Min(1, Math.Max(0, B));
-
-                return Color.FromArgb((int)Math.Round(R * 255, 0), (int)Math.Round(G * 255, 0), (int)Math.Round(B * 255, 0));
+                B =
+                    w1 * (Cos(N1, lightVersor) * kd * lightColor.B / 255f * objColor.B / 255f +
+                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m)) +
+                    w2 * (Cos(N2, lightVersor) * kd * lightColor.B / 255f * objColor.B / 255f +
+                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m)) +
+                    w3 * (Cos(N3, lightVersor) * kd * lightColor.B / 255f * objColor.B / 255f +
+                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m));
 
             }
             else
@@ -207,24 +213,23 @@ namespace triangular_grid_filler
                                 (float)(w1 * N1.Y + w2 * N2.Y + w3 * N3.Y), 
                                 (float)(w1 * N1.Z + w2 * N2.Z + w3 * N3.Z));
 
-                // var normalVersor = GetNormalVersor((int)x, (int)y);
+                normalVersor = Vector3.Normalize(normalVersor);
 
-                double R, G, B;
-                float CosNL = Cos(normalVersor, lightVersor);
+                float CosNL = Math.Max(Cos(normalVersor, lightVersor), 0);
                 var RVector = 2 * CosNL * normalVersor - lightVersor;
 
                 double VRcos = Math.Pow(Math.Max(0, Cos(new Vector3(0, 0, 1), RVector)), m);
 
-                R = CosNL * kd * lightColor.R / 255 * objColor.R / 255 + VRcos * ks * lightColor.R / 255 * objColor.R / 255;
-                G = CosNL * kd * lightColor.G / 255 * objColor.G / 255 + VRcos * ks * lightColor.G / 255 * objColor.G / 255;
-                B = CosNL * kd * lightColor.B / 255 * objColor.B / 255 + VRcos * ks * lightColor.B / 255 * objColor.B / 255;
-
-                R = Math.Min(1, Math.Max(0, R));
-                G = Math.Min(1, Math.Max(0, G));
-                B = Math.Min(1, Math.Max(0, B));
-
-                return Color.FromArgb((int)Math.Round(R * 255, 0), (int)Math.Round(G * 255, 0), (int)Math.Round(B * 255, 0));
+                R = CosNL * kd * lightColor.R / 255f * objColor.R / 255f + VRcos * ks * lightColor.R / 255f * objColor.R / 255f;
+                G = CosNL * kd * lightColor.G / 255f * objColor.G / 255f + VRcos * ks * lightColor.G / 255f * objColor.G / 255f;
+                B = CosNL * kd * lightColor.B / 255f * objColor.B / 255f + VRcos * ks * lightColor.B / 255f * objColor.B / 255f;
             }
+
+            R = Math.Min(1, Math.Max(0, R));
+            G = Math.Min(1, Math.Max(0, G));
+            B = Math.Min(1, Math.Max(0, B));
+
+            return Color.FromArgb((int)Math.Round(R * 255, 0), (int)Math.Round(G * 255, 0), (int)Math.Round(B * 255, 0));
         }
 
         private void objColorBox_Click(object sender, EventArgs e)
