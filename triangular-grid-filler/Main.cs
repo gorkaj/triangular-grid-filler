@@ -325,5 +325,23 @@ namespace triangular_grid_filler
                 LoadTexture(DEFAULT_TEXTURE_PATH);
             }
         }
+
+        private void objBrowseBtn_Click(object sender, EventArgs e)
+        {
+            timer?.Stop();
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "OBJ Files|*.obj;";
+            dialog.InitialDirectory = Path.GetFullPath("..\\..\\..\\models");
+            dialog.Title = "Please select an obj file.";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                loadedObject = LoadObjFile(dialog.FileName);
+                triangles = Triangulator.Triangulate(loadedObject.Vertices.ToList(), loadedObject.Groups[0].Faces.ToList());
+                normals = loadedObject.Normals.ToList();
+                RedrawAll();
+            }
+            timer?.Start();
+        }
     }
 }
