@@ -11,9 +11,9 @@ namespace triangular_grid_filler
         public static int CANVAS_SIZE = 650;
         private ObjLoaderFactory objLoaderFactory;
         private LoadResult loadedObject;
-        //private Bitmap drawArea;
         private DirectBitmap drawArea;
         private DirectBitmap texture;
+        private DirectBitmap normalMap;
         private List<Triangle> triangles;
         private List<Normal> normals;
 
@@ -25,11 +25,13 @@ namespace triangular_grid_filler
 
         private (int R, int G, int B) objectColor;
         private (int R, int G, int B) lightColor;
-        readonly Timer timer;
-        int tickCounter;
+        private Timer? timer;
+        private int tickCounter;
 
         private const string DEFAULT_OBJ_PATH = "../../../models/sphereSmooth.obj";
         private const string DEFAULT_TEXTURE_PATH = "../../../textures/waves.jpg";
+        private const string DEFAULT_NORMAL_MAP_PATH = "../../../normal_maps/stone.jpg";
+        private Vector3 V001 = new(0, 0, 1);
 
         public Main()
         {
@@ -46,17 +48,25 @@ namespace triangular_grid_filler
             FillColorBox(objColorBox, objectColor);
             lightColor = (255, 255, 255);
             FillColorBox(lightColorBox, lightColor);
-            lightVersor = new Vector3(1, 0, .9F);
+            lightVersor = new Vector3(1, 0, (float)zLightTrackBar.Value / 10);
             lightVersor = Vector3.Normalize(lightVersor);
             LoadTexture(DEFAULT_TEXTURE_PATH);
-            //canvasBits = new Int32[CANVAS_SIZE * CANVAS_SIZE];
+            LoadNormalMap(DEFAULT_NORMAL_MAP_PATH);
             tickCounter = 0;
-            timer = new Timer
+            if (rotateLight.Checked)
             {
-                Interval = 10
-            };
-            timer.Tick += new EventHandler(UpdateLightVector);
-            timer.Start();
+                timer = new Timer
+                {
+                    Interval = 10
+                };
+                timer.Tick += new EventHandler(UpdateLightVector);
+                timer.Start();
+            }
+            else
+            {
+                timer = null;
+            }
+
             RedrawAll();
         }
 
@@ -78,11 +88,12 @@ namespace triangular_grid_filler
 
         private void RedrawAll()
         {
-            drawArea.Dispose();
-            drawArea = new(CANVAS_SIZE, CANVAS_SIZE);
+            Graphics gg = Graphics.FromImage(drawArea.Bitmap);
+            gg.Clear(SystemColors.Control);
 
             //Parallel.ForEach(triangles,
-            //   t => TriangleFiller.FillTriangle(t, drawArea, ComputeColor));
+            //    t => TriangleFiller.FillTriangle(t, drawArea, ComputeColor));
+
 
             foreach (var t in triangles)
             {
@@ -101,22 +112,11 @@ namespace triangular_grid_filler
             }
 
             Canvas.Image = drawArea.Bitmap;
-            //Canvas.Refresh();
         }
 
         private float Cos(Vector3 a, Vector3 b)
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
-        }
-
-        private Color ColorFromRGB(int R, int G, int B)
-        {
-            return Color.FromArgb(R, G, B);
-        }
-
-        private (int R, int G, int B) RGBFromColor(Color c)
-        {
-            return (c.R, c.G, c.B);
         }
 
         private void LoadTexture(string path)
@@ -134,16 +134,54 @@ namespace triangular_grid_filler
             RedrawAll();
         }
 
-        private Vector3 GetNormalVersor(int x, int y)
+        private void LoadNormalMap(string path)
         {
-            float _x, _y, _z, _radius;
-            _radius = CANVAS_SIZE / 2;
-            _x = x - CANVAS_SIZE / 2;
-            _y = y - CANVAS_SIZE / 2;
-            _z = (float)Math.Sqrt(_radius * _radius - _x * _x - _y * _y);
-            Vector3 normalVersor = new Vector3(_x, _y, _z);
-            normalVersor = Vector3.Normalize(normalVersor);
-            return normalVersor;
+            Image sourceImage = new Bitmap(path);
+            normalMap = new DirectBitmap(CANVAS_SIZE, CANVAS_SIZE);
+            using (var g = Graphics.FromImage(normalMap.Bitmap))
+            {
+                g.DrawImage(sourceImage, 0, 0);
+            }
+            RedrawAll();
+        }
+
+        private List<Vector3> GetNormalVectors(List<int> ind, int x, int y)
+        {
+            List<Vector3> result = new();
+
+            foreach (int i in ind)
+            {
+                result.Add(new Vector3(normals[i].X, normals[i].Y, normals[i].Z));
+            }
+            for (int i = 0; i < result.Count; ++i)
+            {
+                result[i] = Vector3.Normalize(result[i]);
+            }
+
+            if (useNormalMap.Checked)
+            {
+                var nx = (float)normalMap.GetPixel(x, y).R  * 2 / 255 - 1;
+                var ny = (float)normalMap.GetPixel(x, y).G * 2 / 255 - 1;
+                var nz = (float)normalMap.GetPixel(x, y).B / 255;
+
+                for (int i = 0; i < result.Count; ++i)
+                {
+                    var B = result[i] != V001 ? Vector3.Cross(result[i], V001): new Vector3(0, 1, 0);
+                    var T = Vector3.Cross(B, result[i]);
+
+                    result[i] = new Vector3(
+                        T.X * nx + B.X * ny + result[i].X * nz,
+                        T.Y * nx + B.Y * ny + result[i].Y * nz,
+                        T.Z * nx + B.Z * ny + result[i].Z * nz);
+                }
+
+                for (int i = 0; i < result.Count; ++i)
+                {
+                    result[i] = Vector3.Normalize(result[i]);
+                }
+            }
+
+            return result;
         }
 
         public Color ComputeColor(double x, double y, Triangle t)
@@ -160,13 +198,10 @@ namespace triangular_grid_filler
             var v2 = t.Points[1];
             var v3 = t.Points[2];
 
-            var N1 = new Vector3(normals[i1].X, normals[i1].Y, normals[i1].Z);
-            var N2 = new Vector3(normals[i2].X, normals[i2].Y, normals[i2].Z);
-            var N3 = new Vector3(normals[i3].X, normals[i3].Y, normals[i3].Z);
-
-            N1 = Vector3.Normalize(N1);
-            N2 = Vector3.Normalize(N2);
-            N3 = Vector3.Normalize(N3);
+            var normals = GetNormalVectors(new List<int>() { i1, i2, i3 }, (int)x, (int)y);
+            var N1 = normals[0];
+            var N2 = normals[1];
+            var N3 = normals[2];
 
 
             double w1 = ((v2.Y - v3.Y) * (x - v3.X) + (v3.X - v2.X) * (y - v3.Y)) / ((v2.Y - v3.Y) * (v1.X - v3.X) + (v3.X - v2.X) * (v1.Y - v3.Y));
@@ -183,27 +218,27 @@ namespace triangular_grid_filler
 
                 R =
                     w1 * (Cos(N1, lightVersor) * kd * lightColor.R / 255f * objColor.R / 255f +
-                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m)) +
+                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(V001, R1), 0), m)) +
                     w2 * (Cos(N2, lightVersor) * kd * lightColor.R / 255f * objColor.R / 255f +
-                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m)) +
+                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(V001, R2), 0), m)) +
                     w3 * (Cos(N3, lightVersor) * kd * lightColor.R / 255f * objColor.R / 255f +
-                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m));
+                    ks * lightColor.R / 255f * objColor.R / 255f * Math.Pow(Math.Max(Cos(V001, R3), 0), m));
 
                 G =
                     w1 * (Cos(N1, lightVersor) * kd * lightColor.G / 255f * objColor.G / 255f +
-                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m)) +
+                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(V001, R1), 0), m)) +
                     w2 * (Cos(N2, lightVersor) * kd * lightColor.G / 255f * objColor.G / 255f +
-                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m)) +
+                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(V001, R2), 0), m)) +
                     w3 * (Cos(N3, lightVersor) * kd * lightColor.G / 255f * objColor.G / 255f +
-                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m));
+                    ks * lightColor.G / 255f * objColor.G / 255f * Math.Pow(Math.Max(Cos(V001, R3), 0), m));
 
                 B =
                     w1 * (Cos(N1, lightVersor) * kd * lightColor.B / 255f * objColor.B / 255f +
-                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R1), 0), m)) +
+                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(V001, R1), 0), m)) +
                     w2 * (Cos(N2, lightVersor) * kd * lightColor.B / 255f * objColor.B / 255f +
-                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R2), 0), m)) +
+                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(V001, R2), 0), m)) +
                     w3 * (Cos(N3, lightVersor) * kd * lightColor.B / 255f * objColor.B / 255f +
-                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(new Vector3(0, 0, 1), R3), 0), m));
+                    ks * lightColor.B / 255f * objColor.B / 255f * Math.Pow(Math.Max(Cos(V001, R3), 0), m));
 
             }
             else
@@ -218,7 +253,7 @@ namespace triangular_grid_filler
                 float CosNL = Math.Max(Cos(normalVersor, lightVersor), 0);
                 var RVector = 2 * CosNL * normalVersor - lightVersor;
 
-                double VRcos = Math.Pow(Math.Max(0, Cos(new Vector3(0, 0, 1), RVector)), m);
+                double VRcos = Math.Pow(Math.Max(0, Cos(V001, RVector)), m);
 
                 R = CosNL * kd * lightColor.R / 255f * objColor.R / 255f + VRcos * ks * lightColor.R / 255f * objColor.R / 255f;
                 G = CosNL * kd * lightColor.G / 255f * objColor.G / 255f + VRcos * ks * lightColor.G / 255f * objColor.G / 255f;
@@ -287,7 +322,7 @@ namespace triangular_grid_filler
             float MAX = 240;
             if (tickCounter == MAX) tickCounter = 0;
             float x, y, z;
-            z = 0.9F;
+            z = (float)zLightTrackBar.Value / 10;
             x = (float)Math.Cos(tickCounter / MAX * Math.PI * 2);
             y = (float)Math.Sin(tickCounter / MAX * Math.PI * 2);
 
@@ -320,10 +355,7 @@ namespace triangular_grid_filler
 
         private void textureRadioBtn_CheckedChanged(object sender, EventArgs e)
         {
-            if(textureRadioBtn.Checked)
-            {
-                LoadTexture(DEFAULT_TEXTURE_PATH);
-            }
+            RedrawAll();
         }
 
         private void objBrowseBtn_Click(object sender, EventArgs e)
@@ -342,6 +374,49 @@ namespace triangular_grid_filler
                 RedrawAll();
             }
             timer?.Start();
+        }
+
+        private void zLightTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateLightVector(sender, e);
+        }
+
+        private void rotateLight_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rotateLight.Checked)
+            {
+                timer = new Timer
+                {
+                    Interval = 10
+                };
+                timer.Tick += new EventHandler(UpdateLightVector);
+                timer.Start();
+            }
+            else
+            {
+                timer?.Dispose();
+                timer = null;
+            }
+        }
+
+        private void chooseNormalMapBtn_Click(object sender, EventArgs e)
+        {
+            timer?.Stop();
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.tif;...";
+            dialog.InitialDirectory = Path.GetFullPath("..\\..\\..\\normal_maps");
+            dialog.Title = "Please select an image file.";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                LoadNormalMap(dialog.FileName);
+            }
+            timer?.Start();
+        }
+
+        private void useNormalMap_CheckedChanged(object sender, EventArgs e)
+        {
+            RedrawAll();
         }
     }
 }

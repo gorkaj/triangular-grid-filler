@@ -31,9 +31,15 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Canvas = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.chooseNormalMapBtn = new System.Windows.Forms.Button();
+            this.useNormalMap = new System.Windows.Forms.CheckBox();
+            this.rotateLight = new System.Windows.Forms.CheckBox();
             this.objBrowseBtn = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.zLightTrackBar = new System.Windows.Forms.TrackBar();
+            this.label6 = new System.Windows.Forms.Label();
             this.lightColorBox = new System.Windows.Forms.PictureBox();
             this.kd_trackbar = new System.Windows.Forms.TrackBar();
             this.ks_trackbar = new System.Windows.Forms.TrackBar();
@@ -54,7 +60,9 @@
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zLightTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).BeginInit();
@@ -77,20 +85,22 @@
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1128, 703);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1182, 733);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // Canvas
             // 
             this.Canvas.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.Canvas.Location = new System.Drawing.Point(21, 3);
+            this.Canvas.Location = new System.Drawing.Point(37, 3);
             this.Canvas.Name = "Canvas";
-            this.Canvas.Size = new System.Drawing.Size(650, 697);
+            this.Canvas.Size = new System.Drawing.Size(650, 727);
             this.Canvas.TabIndex = 0;
             this.Canvas.TabStop = false;
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.groupBox4);
+            this.groupBox1.Controls.Add(this.rotateLight);
             this.groupBox1.Controls.Add(this.objBrowseBtn);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.groupBox3);
@@ -98,12 +108,57 @@
             this.groupBox1.Controls.Add(this.showGrid);
             this.groupBox1.Controls.Add(this.colorGroupBox);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(695, 3);
+            this.groupBox1.Location = new System.Drawing.Point(728, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(430, 697);
+            this.groupBox1.Size = new System.Drawing.Size(451, 727);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Parameters";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.chooseNormalMapBtn);
+            this.groupBox4.Controls.Add(this.useNormalMap);
+            this.groupBox4.Location = new System.Drawing.Point(6, 578);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(436, 81);
+            this.groupBox4.TabIndex = 17;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Normal vectors map";
+            // 
+            // chooseNormalMapBtn
+            // 
+            this.chooseNormalMapBtn.Location = new System.Drawing.Point(156, 36);
+            this.chooseNormalMapBtn.Name = "chooseNormalMapBtn";
+            this.chooseNormalMapBtn.Size = new System.Drawing.Size(94, 29);
+            this.chooseNormalMapBtn.TabIndex = 9;
+            this.chooseNormalMapBtn.Text = "Browse";
+            this.chooseNormalMapBtn.UseVisualStyleBackColor = true;
+            this.chooseNormalMapBtn.Click += new System.EventHandler(this.chooseNormalMapBtn_Click);
+            // 
+            // useNormalMap
+            // 
+            this.useNormalMap.AutoSize = true;
+            this.useNormalMap.Location = new System.Drawing.Point(10, 39);
+            this.useNormalMap.Name = "useNormalMap";
+            this.useNormalMap.Size = new System.Drawing.Size(140, 24);
+            this.useNormalMap.TabIndex = 0;
+            this.useNormalMap.Text = "Use normal map";
+            this.useNormalMap.UseVisualStyleBackColor = true;
+            this.useNormalMap.CheckedChanged += new System.EventHandler(this.useNormalMap_CheckedChanged);
+            // 
+            // rotateLight
+            // 
+            this.rotateLight.AutoSize = true;
+            this.rotateLight.Checked = true;
+            this.rotateLight.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.rotateLight.Location = new System.Drawing.Point(130, 683);
+            this.rotateLight.Name = "rotateLight";
+            this.rotateLight.Size = new System.Drawing.Size(169, 24);
+            this.rotateLight.TabIndex = 16;
+            this.rotateLight.Text = "Rotating light source";
+            this.rotateLight.UseVisualStyleBackColor = true;
+            this.rotateLight.CheckedChanged += new System.EventHandler(this.rotateLight_CheckedChanged);
             // 
             // objBrowseBtn
             // 
@@ -126,6 +181,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.zLightTrackBar);
+            this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.lightColorBox);
             this.groupBox3.Controls.Add(this.kd_trackbar);
             this.groupBox3.Controls.Add(this.ks_trackbar);
@@ -136,15 +193,35 @@
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Location = new System.Drawing.Point(6, 74);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(414, 222);
+            this.groupBox3.Size = new System.Drawing.Size(436, 286);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Light model";
             // 
+            // zLightTrackBar
+            // 
+            this.zLightTrackBar.Location = new System.Drawing.Point(116, 220);
+            this.zLightTrackBar.Maximum = 20;
+            this.zLightTrackBar.Name = "zLightTrackBar";
+            this.zLightTrackBar.Size = new System.Drawing.Size(292, 56);
+            this.zLightTrackBar.SmallChange = 2;
+            this.zLightTrackBar.TabIndex = 11;
+            this.zLightTrackBar.Value = 9;
+            this.zLightTrackBar.ValueChanged += new System.EventHandler(this.zLightTrackBar_ValueChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(10, 227);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(100, 20);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Light position";
+            // 
             // lightColorBox
             // 
             this.lightColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lightColorBox.Location = new System.Drawing.Point(91, 171);
+            this.lightColorBox.Location = new System.Drawing.Point(105, 172);
             this.lightColorBox.Name = "lightColorBox";
             this.lightColorBox.Size = new System.Drawing.Size(46, 34);
             this.lightColorBox.TabIndex = 9;
@@ -198,7 +275,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(4, 179);
+            this.label5.Location = new System.Drawing.Point(18, 180);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(80, 20);
             this.label5.TabIndex = 8;
@@ -228,9 +305,9 @@
             this.groupBox2.Controls.Add(this.textureRadioBtn);
             this.groupBox2.Controls.Add(this.solidRadioBtn);
             this.groupBox2.Controls.Add(this.objColorBox);
-            this.groupBox2.Location = new System.Drawing.Point(6, 302);
+            this.groupBox2.Location = new System.Drawing.Point(6, 366);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(414, 105);
+            this.groupBox2.Size = new System.Drawing.Size(436, 105);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Object color";
@@ -241,7 +318,7 @@
             this.textureBtn.Name = "textureBtn";
             this.textureBtn.Size = new System.Drawing.Size(94, 29);
             this.textureBtn.TabIndex = 8;
-            this.textureBtn.Text = "Choose";
+            this.textureBtn.Text = "Browse";
             this.textureBtn.UseVisualStyleBackColor = true;
             this.textureBtn.Click += new System.EventHandler(this.textureBtn_Click);
             // 
@@ -284,7 +361,7 @@
             this.showGrid.AutoSize = true;
             this.showGrid.Checked = true;
             this.showGrid.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showGrid.Location = new System.Drawing.Point(16, 514);
+            this.showGrid.Location = new System.Drawing.Point(16, 683);
             this.showGrid.Name = "showGrid";
             this.showGrid.Size = new System.Drawing.Size(98, 24);
             this.showGrid.TabIndex = 11;
@@ -296,9 +373,9 @@
             // 
             this.colorGroupBox.Controls.Add(this.radioButton2);
             this.colorGroupBox.Controls.Add(this.interpolateButton);
-            this.colorGroupBox.Location = new System.Drawing.Point(6, 413);
+            this.colorGroupBox.Location = new System.Drawing.Point(6, 477);
             this.colorGroupBox.Name = "colorGroupBox";
-            this.colorGroupBox.Size = new System.Drawing.Size(414, 95);
+            this.colorGroupBox.Size = new System.Drawing.Size(436, 95);
             this.colorGroupBox.TabIndex = 10;
             this.colorGroupBox.TabStop = false;
             this.colorGroupBox.Text = "Color";
@@ -330,7 +407,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1128, 703);
+            this.ClientSize = new System.Drawing.Size(1182, 733);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -341,8 +418,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zLightTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lightColorBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kd_trackbar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ks_trackbar)).EndInit();
@@ -381,5 +461,11 @@
         private Button objBrowseBtn;
         private Label label4;
         private GroupBox groupBox3;
+        private TrackBar zLightTrackBar;
+        private Label label6;
+        private CheckBox rotateLight;
+        private GroupBox groupBox4;
+        private Button chooseNormalMapBtn;
+        private CheckBox useNormalMap;
     }
 }

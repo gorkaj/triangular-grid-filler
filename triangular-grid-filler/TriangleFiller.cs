@@ -32,7 +32,7 @@ namespace triangular_grid_filler
             int n = points.Count;
             int index = 0;
 
-            List<AETNode> AET = new List<AETNode>();
+            List<AETNode> AET = new();
             int maxY = (int)Math.Round((double)points[sortOrder[n - 1]].Y, 0);
             for (int y = (int)Math.Round((double)points[sortOrder[0]].Y, 0); y <= maxY; y++)
             {
