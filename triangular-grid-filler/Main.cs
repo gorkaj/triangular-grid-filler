@@ -39,7 +39,7 @@ namespace triangular_grid_filler
             objLoaderFactory = new ObjLoaderFactory();
             drawArea = new(CANVAS_SIZE, CANVAS_SIZE);
             loadedObject = LoadObjFile();
-            triangles = Triangulator.Triangulate(loadedObject.Vertices.ToList(), loadedObject.Groups[0].Faces.ToList());
+            triangles = ObjMapper.Triangulate(loadedObject.Vertices.ToList(), loadedObject.Groups[0].Faces.ToList());
             normals = loadedObject.Normals.ToList();
             kd = (float)kd_trackbar.Value / 100;
             ks = (float)ks_trackbar.Value / 100;
@@ -92,12 +92,12 @@ namespace triangular_grid_filler
             gg.Clear(SystemColors.Control);
 
             //Parallel.ForEach(triangles,
-            //    t => TriangleFiller.FillTriangle(t, drawArea, ComputeColor));
+            //    t => PolygonFiller.FillPolygon(t, drawArea, ComputeColor));
 
 
             foreach (var t in triangles)
             {
-                TriangleFiller.FillTriangle(t, drawArea, ComputeColor);
+                PolygonFiller.FillPolygon(t, drawArea, ComputeColor);
             }
 
             if (showGrid.Checked)
@@ -369,7 +369,7 @@ namespace triangular_grid_filler
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 loadedObject = LoadObjFile(dialog.FileName);
-                triangles = Triangulator.Triangulate(loadedObject.Vertices.ToList(), loadedObject.Groups[0].Faces.ToList());
+                triangles = ObjMapper.Triangulate(loadedObject.Vertices.ToList(), loadedObject.Groups[0].Faces.ToList());
                 normals = loadedObject.Normals.ToList();
                 RedrawAll();
             }

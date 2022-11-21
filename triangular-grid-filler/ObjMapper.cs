@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace triangular_grid_filler
 {
-    public class Triangulator
+    public class ObjMapper
     {
         public static Point MapCoordinatesToCanvas(float x, float y, int radius)
         {

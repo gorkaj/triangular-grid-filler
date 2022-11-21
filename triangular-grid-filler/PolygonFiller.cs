@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace triangular_grid_filler
 {
-    class AETNode
+    class AETPointer
     {
         public int id;
         public float y, x;
         public float m;
-        public AETNode(int id, float x, float y, float m)
+        public AETPointer(int id, float x, float y, float m)
         {
             this.id = id;
             this.x = x;
@@ -21,9 +21,9 @@ namespace triangular_grid_filler
         }
     }
 
-    public static class TriangleFiller
+    public static class PolygonFiller
     {
-        public static void FillTriangle(Triangle t, DirectBitmap bmap, Func<double, double, Triangle, Color> computeColor)
+        public static void FillPolygon(Triangle t, DirectBitmap bmap, Func<double, double, Triangle, Color> computeColor)
         {
             var points = t.Points;
             List<int> sortOrder = Enumerable.Range(0, points.Count).ToList();
@@ -32,7 +32,7 @@ namespace triangular_grid_filler
             int n = points.Count;
             int index = 0;
 
-            List<AETNode> AET = new();
+            List<AETPointer> AET = new();
             int maxY = (int)Math.Round((double)points[sortOrder[n - 1]].Y, 0);
             for (int y = (int)Math.Round((double)points[sortOrder[0]].Y, 0); y <= maxY; y++)
             {
@@ -50,11 +50,11 @@ namespace triangular_grid_filler
                         float dy = points[currIndex].Y - points[prevIndex].Y;
 
                         if (points[prevIndex].Y != points[currIndex].Y)
-                            AET.Add(new AETNode(prevIndex, points[currIndex].X, points[prevIndex].Y, dx / dy));
+                            AET.Add(new AETPointer(prevIndex, points[currIndex].X, points[prevIndex].Y, dx / dy));
                     }
                     else
                     {
-                        AET.RemoveAll(node => node.id == prevIndex);
+                        AET.RemoveAll(pt => pt.id == prevIndex);
                     }
 
                     if (points[nextIndex].Y >= points[currIndex].Y)
@@ -63,11 +63,11 @@ namespace triangular_grid_filler
                         float dy = points[currIndex].Y - points[nextIndex].Y;
 
                         if (points[nextIndex].Y != points[currIndex].Y)
-                            AET.Add(new AETNode(currIndex, points[currIndex].X, points[nextIndex].Y, dx / dy));
+                            AET.Add(new AETPointer(currIndex, points[currIndex].X, points[nextIndex].Y, dx / dy));
                     }
                     else
                     {
-                        AET.RemoveAll(node => node.id == currIndex);
+                        AET.RemoveAll(pt => pt.id == currIndex);
                     }
 
                     index++;
@@ -90,7 +90,7 @@ namespace triangular_grid_filler
                     }
                 }
 
-                foreach (AETNode node in AET) node.x += node.m;
+                foreach (AETPointer pt in AET) pt.x += pt.m;
             }
         }
     }
