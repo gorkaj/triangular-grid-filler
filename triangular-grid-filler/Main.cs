@@ -2,6 +2,7 @@ using ObjLoader.Loader.Data.VertexData;
 using ObjLoader.Loader.Loaders;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.Xml;
 using Timer = System.Windows.Forms.Timer;
 
 namespace triangular_grid_filler
@@ -18,6 +19,7 @@ namespace triangular_grid_filler
         private List<Normal> normals;
 
         private Vector3 lightVersor;
+        private Polygon cloud;
 
         private float kd;
         private float ks;
@@ -27,6 +29,8 @@ namespace triangular_grid_filler
         private (int R, int G, int B) lightColor;
         private Timer? timer;
         private int tickCounter;
+        private Timer? cloudTimer;
+        private int cloudTickCounter = 0;
 
         private const string DEFAULT_OBJ_PATH = "../../../models/sphereSmooth.obj";
         private const string DEFAULT_TEXTURE_PATH = "../../../textures/waves.jpg";
@@ -53,6 +57,13 @@ namespace triangular_grid_filler
             LoadTexture(DEFAULT_TEXTURE_PATH);
             LoadNormalMap(DEFAULT_NORMAL_MAP_PATH);
             tickCounter = 0;
+            
+            var cloudVertices = new List<Vertex>() { new Vertex(1.3f, .5f, .5f),
+                                                     new Vertex(1.2f, .6f, .5f),
+                                                     new Vertex(1.0f, -.3f, .5f),
+                                                     new Vertex(1.15f, -.7f, .5f)};
+            cloud = new Polygon(cloudVertices);
+            
             if (rotateLight.Checked)
             {
                 timer = new Timer
@@ -67,7 +78,21 @@ namespace triangular_grid_filler
                 timer = null;
             }
 
-            RedrawAll();
+            if (cloudsBox.Checked)
+            {
+                cloudTimer = new Timer
+                {
+                    Interval = 10
+                };
+                cloudTimer.Tick += new EventHandler(UpdateCloudPosition);
+                cloudTimer.Start();
+            }
+            else
+            {
+                cloudTimer = null;
+            }
+
+        RedrawAll();
         }
 
         private void FillColorBox(PictureBox box, (int R, int G, int B) color)
@@ -90,15 +115,16 @@ namespace triangular_grid_filler
         {
             Graphics gg = Graphics.FromImage(drawArea.Bitmap);
             gg.Clear(SystemColors.Control);
+            gg.Dispose();
 
-            //Parallel.ForEach(triangles,
-            //    t => PolygonFiller.FillPolygon(t, drawArea, ComputeColor));
+            Parallel.ForEach(triangles,
+                t => PolygonFiller.FillPolygon(t, t.Points, drawArea, ComputeColor, null));
 
 
-            foreach (var t in triangles)
-            {
-                PolygonFiller.FillPolygon(t, drawArea, ComputeColor);
-            }
+            //foreach (var t in triangles)
+            //{
+            //    PolygonFiller.FillPolygon(t, t.Points, drawArea, ComputeColor, null);
+            //}
 
             if (showGrid.Checked)
             {
@@ -111,7 +137,40 @@ namespace triangular_grid_filler
                 }
             }
 
+            if(cloud != null && cloudsBox.Checked)
+            {
+                using (Graphics g = Graphics.FromImage(drawArea.Bitmap))
+                {
+                    cloud?.Draw(g);
+                    PolygonFiller.FillPolygon(null, cloud?.Points, drawArea, null, Color.LightBlue);
+                }
+                // DrawShadow();
+            }
+
             Canvas.Image = drawArea.Bitmap;
+
+        }
+
+        private void DrawShadow()
+        {
+            float h1 = lightVersor.Z - cloud.Vertices[0].Z;
+            float h2 = cloud.Vertices[0].Z;
+            float dh = h2 / h1;
+
+            var newPoints = new List<Vertex>();
+            for(int i=0;i<cloud.Points.Count; ++i)
+            {
+                var dx = cloud.Vertices[i].X - lightVersor.X;
+                var dy = cloud.Vertices[i].Y - lightVersor.Y;
+
+                newPoints.Add(new Vertex(cloud.Vertices[i].X + dh * dx, cloud.Vertices[i].Y + dh * dy, 0));
+            }
+
+            var shade = new Polygon(newPoints);
+            using (Graphics g = Graphics.FromImage(drawArea.Bitmap))
+            {
+                PolygonFiller.FillPolygon(null, shade.Points, drawArea, null, Color.Gray);
+            }
         }
 
         private float Cos(Vector3 a, Vector3 b)
@@ -333,6 +392,23 @@ namespace triangular_grid_filler
             tickCounter++;
         }
 
+        private void UpdateCloudPosition(Object o, EventArgs e)
+        {
+            if (cloud != null && cloudsBox.Checked)
+            {
+                if (cloudTickCounter == 100)
+                    cloudTickCounter = 0;
+
+                var cloudVertices = new List<Vertex>() { new Vertex(1.3f - cloudTickCounter * 0.02f, .5f, .5f),
+                                                     new Vertex(1.2f - cloudTickCounter * 0.02f, .6f, .5f),
+                                                     new Vertex(1.0f - cloudTickCounter * 0.02f, -.3f, .5f),
+                                                     new Vertex(1.15f - cloudTickCounter * 0.02f, -.7f, .5f)};
+                cloud = new Polygon(cloudVertices);
+            }
+            RedrawAll();
+            cloudTickCounter++;
+        }
+
         private void textureBtn_Click(object sender, EventArgs e)
         {
             timer?.Stop();
@@ -417,6 +493,24 @@ namespace triangular_grid_filler
         private void useNormalMap_CheckedChanged(object sender, EventArgs e)
         {
             RedrawAll();
+        }
+
+        private void cloudsBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cloudsBox.Checked)
+            {
+                cloudTimer = new Timer
+                {
+                    Interval = 10
+                };
+                cloudTimer.Tick += new EventHandler(UpdateCloudPosition);
+                cloudTimer.Start();
+            }
+            else
+            {
+                cloudTimer?.Dispose();
+                cloudTimer = null;
+            }
         }
     }
 }

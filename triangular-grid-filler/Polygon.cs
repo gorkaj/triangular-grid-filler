@@ -7,37 +7,36 @@ using System.Threading.Tasks;
 
 namespace triangular_grid_filler
 {
-    public class Triangle
+    public class Polygon
     {
-        private List<int> ind;
         private List<Vertex> vertices;
         private List<Point> mappedPoints;
         private Pen pen;
 
-        public Triangle(Vertex a, Vertex b, Vertex c, List<int> ind)
+        public Polygon(List<Vertex> vert)
         {
             vertices = new List<Vertex>();
             mappedPoints = new List<Point>();
-            pen = new Pen(new SolidBrush(Color.Black), 1);
-            this.vertices.Add(a);
-            this.vertices.Add(b);
-            this.vertices.Add(c);
+            pen = new Pen(new SolidBrush(Color.AliceBlue), 2);
+            for(int i = 0; i < vert.Count; i++)
+            {
+                vertices.Add(vert[i]);
+            }
             foreach (Vertex v in vertices)
                 mappedPoints.Add(ObjMapper.MapCoordinatesToCanvas(v.X, v.Y, Main.CANVAS_SIZE / 2));
-            this.ind = ind;
         }
 
         public List<Point> Points { get => mappedPoints; set => mappedPoints = value; }
-        public List<int> NormalIds { get => ind; }
+        public List<Vertex> Vertices { get => vertices; set => vertices = value; }
 
-        public void drawTriangle(Graphics g)
+        public void Draw(Graphics g)
         {
-            if (vertices.Count != 3)
-                return;
+            for (int i = 0; i < Points.Count; ++i)
+            {
+                int next = (i + 1) % Points.Count;
+                g.DrawLine(pen, mappedPoints[i], mappedPoints[next]);
+            }
 
-            g.DrawLine(pen, mappedPoints[0], mappedPoints[1]);
-            g.DrawLine(pen, mappedPoints[1], mappedPoints[2]);
-            g.DrawLine(pen, mappedPoints[2], mappedPoints[0]);
         }
     }
 }

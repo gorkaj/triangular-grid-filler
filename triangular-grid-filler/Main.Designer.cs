@@ -31,6 +31,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Canvas = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cloudsBox = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chooseNormalMapBtn = new System.Windows.Forms.Button();
             this.useNormalMap = new System.Windows.Forms.CheckBox();
@@ -99,6 +100,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cloudsBox);
             this.groupBox1.Controls.Add(this.groupBox4);
             this.groupBox1.Controls.Add(this.rotateLight);
             this.groupBox1.Controls.Add(this.objBrowseBtn);
@@ -114,6 +116,17 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Parameters";
+            // 
+            // cloudsBox
+            // 
+            this.cloudsBox.AutoSize = true;
+            this.cloudsBox.Location = new System.Drawing.Point(303, 684);
+            this.cloudsBox.Name = "cloudsBox";
+            this.cloudsBox.Size = new System.Drawing.Size(76, 24);
+            this.cloudsBox.TabIndex = 18;
+            this.cloudsBox.Text = "Clouds";
+            this.cloudsBox.UseVisualStyleBackColor = true;
+            this.cloudsBox.CheckedChanged += new System.EventHandler(this.cloudsBox_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -383,22 +396,22 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
+            this.radioButton2.Checked = true;
             this.radioButton2.Location = new System.Drawing.Point(25, 56);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(65, 24);
             this.radioButton2.TabIndex = 1;
+            this.radioButton2.TabStop = true;
             this.radioButton2.Text = "exact";
             this.radioButton2.UseVisualStyleBackColor = true;
             // 
             // interpolateButton
             // 
             this.interpolateButton.AutoSize = true;
-            this.interpolateButton.Checked = true;
             this.interpolateButton.Location = new System.Drawing.Point(25, 26);
             this.interpolateButton.Name = "interpolateButton";
             this.interpolateButton.Size = new System.Drawing.Size(193, 24);
             this.interpolateButton.TabIndex = 0;
-            this.interpolateButton.TabStop = true;
             this.interpolateButton.Text = "interpolate from vertices";
             this.interpolateButton.UseVisualStyleBackColor = true;
             this.interpolateButton.CheckedChanged += new System.EventHandler(this.interpolateButton_CheckedChanged);
@@ -413,7 +426,7 @@
             this.MaximizeBox = false;
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Triangular grid filler";
+            this.Text = "Objects animator";
             this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -467,5 +480,6 @@
         private GroupBox groupBox4;
         private Button chooseNormalMapBtn;
         private CheckBox useNormalMap;
+        private CheckBox cloudsBox;
     }
 }
