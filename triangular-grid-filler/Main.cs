@@ -117,14 +117,14 @@ namespace triangular_grid_filler
             gg.Clear(SystemColors.Control);
             gg.Dispose();
 
-            Parallel.ForEach(triangles,
-                t => PolygonFiller.FillPolygon(t, t.Points, drawArea, ComputeColor, null));
+            //Parallel.ForEach(triangles,
+            //    t => PolygonFiller.FillPolygon(t, t.Points, drawArea, ComputeColor, null));
 
 
-            //foreach (var t in triangles)
-            //{
-            //    PolygonFiller.FillPolygon(t, t.Points, drawArea, ComputeColor, null);
-            //}
+            foreach (var t in triangles)
+            {
+                PolygonFiller.FillPolygon(t, t.Points, drawArea, ComputeColor, null);
+            }
 
             if (showGrid.Checked)
             {
@@ -151,27 +151,27 @@ namespace triangular_grid_filler
 
         }
 
-        private void DrawShadow()
-        {
-            float h1 = lightVersor.Z - cloud.Vertices[0].Z;
-            float h2 = cloud.Vertices[0].Z;
-            float dh = h2 / h1;
+        //private void DrawShadow()
+        //{
+        //    float h1 = lightVersor.Z - cloud.Vertices[0].Z;
+        //    float h2 = cloud.Vertices[0].Z;
+        //    float dh = h2 / h1;
 
-            var newPoints = new List<Vertex>();
-            for(int i=0;i<cloud.Points.Count; ++i)
-            {
-                var dx = cloud.Vertices[i].X - lightVersor.X;
-                var dy = cloud.Vertices[i].Y - lightVersor.Y;
+        //    var newPoints = new List<Vertex>();
+        //    for(int i=0;i<cloud.Points.Count; ++i)
+        //    {
+        //        var dx = cloud.Vertices[i].X - lightVersor.X;
+        //        var dy = cloud.Vertices[i].Y - lightVersor.Y;
 
-                newPoints.Add(new Vertex(cloud.Vertices[i].X + dh * dx, cloud.Vertices[i].Y + dh * dy, 0));
-            }
+        //        newPoints.Add(new Vertex(cloud.Vertices[i].X + dh * dx, cloud.Vertices[i].Y + dh * dy, 0));
+        //    }
 
-            var shade = new Polygon(newPoints);
-            using (Graphics g = Graphics.FromImage(drawArea.Bitmap))
-            {
-                PolygonFiller.FillPolygon(null, shade.Points, drawArea, null, Color.Gray);
-            }
-        }
+        //    var shade = new Polygon(newPoints);
+        //    using (Graphics g = Graphics.FromImage(drawArea.Bitmap))
+        //    {
+        //        PolygonFiller.FillPolygon(null, shade.Points, drawArea, null, Color.Gray);
+        //    }
+        //}
 
         private float Cos(Vector3 a, Vector3 b)
         {
