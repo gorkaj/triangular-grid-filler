@@ -1,14 +1,15 @@
-# Animator obiektów
+# Object animator
 
-Aplikacja pozwala na wczytywanie plików .obj, które następnie mapuje na płaszczyznę 2D. Lewa część okna odpowiedzialna jest za wyświetlanie kształtu, a prawa część jest panelem z opcjami.
+The application allows for loading .obj files, which are then mapped onto a 2D plane. The left part of the window is responsible for displaying the shape, while the right part is a panel with options.
 
-Na panelu znajdują się:
-- przycisk pozwalający na załadowanie pliku .obj
-- trzy slidery pozwalające na zmianę parametrów oświetlenia modelu
-- color picker dla koloru światła
-- slider dla pozycji światła
-- kolor obiektu, który może być albo zwykłym kolorem, albo załadowaną teksturą 
-- dwa algorytmy wyznaczania koloru wypełnienia
-- opcja użycia mapy wektorów normalnych ładowanych z pliku
-- możliwość pokazania / ukrycia siatki trójkątów
-- możliwość zatrzymania / wznowienia animacji światła
+On the panel, there are:
+
+- a button allowing for loading .obj files
+- three sliders for changing the model's lighting parameters
+- a color picker for the light color
+- a slider for the light position
+- object color, which can be either a regular color or a loaded texture
+- two algorithms for determining the fill color
+- an option to use a map of normal vectors loaded from a file
+- the ability to show/hide the triangle mesh
+- the ability to pause/resume light animation
